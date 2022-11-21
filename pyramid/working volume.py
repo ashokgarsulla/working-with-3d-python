@@ -1,9 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-# noinspection PyUnresolvedReferences
 import vtkmodules.vtkInteractionStyle
-# noinspection PyUnresolvedReferences
 import vtkmodules.vtkRenderingOpenGL2
 from vtkmodules.vtkCommonColor import vtkNamedColors
 from vtkmodules.vtkCommonCore import vtkPoints
@@ -81,7 +77,7 @@ def main():
     renderer.GetActiveCamera().Elevation(-20)
     renderer.ResetCameraClippingRange()
 
-    # renderer.SetBackground(colors.GetColor3d("Silver"))
+    renderer.SetBackground(colors.GetColor3d("green"))
 
     renderWindow.Render()
     renderWindowInteractor.Start()
