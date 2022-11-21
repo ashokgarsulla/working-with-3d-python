@@ -58,7 +58,12 @@ def main():
 
     actor = vtkActor()
     actor.SetMapper(mapper)
+    
     actor.GetProperty().SetColor(colors.GetColor3d("grey"))
+    actor.GetProperty().SetRepresentationToSurface()
+    actor.GetProperty().EdgeVisibilityOn()
+    actor.GetProperty().SetEdgeColor(255,0,0)
+    actor.GetProperty().SetOpacity(0.3)
 
     # Create a renderer, render window, and interactor
     renderer = vtkRenderer()
