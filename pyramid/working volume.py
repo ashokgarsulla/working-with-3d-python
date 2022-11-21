@@ -16,72 +16,73 @@ from vtkmodules.vtkRenderingCore import (
     vtkRenderer
 )
 
+class WorkingVolume():
 
-def main():
-    colors = vtkNamedColors()
+    def __init__(self):
+        self.colors = vtkNamedColors()
 
-    points = vtkPoints()
+        self.points = vtkPoints()
 
-    p0 = [1.0, 1.0, 1.0]
-    p1 = [-1.0, 1.0, 1.0]
-    p2 = [-1.0, -1.0, 1.0]
-    p3 = [1.0, -1.0, 1.0]
-    p4 = [0.0, 0.0, 0.0]
+        self.p0 = [1.0, 1.0, 1.0]
+        self.p1 = [-1.0, 1.0, 1.0]
+        self.p2 = [-1.0, -1.0, 1.0]
+        self.p3 = [1.0, -1.0, 1.0]
+        self.p4 = [0.0, 0.0, 0.0]
 
-    points.InsertNextPoint(p0)
-    points.InsertNextPoint(p1)
-    points.InsertNextPoint(p2)
-    points.InsertNextPoint(p3)
-    points.InsertNextPoint(p4)
+        self.points.InsertNextPoint(self.p0)
+        self.points.InsertNextPoint(self.p1)
+        self.points.InsertNextPoint(self.p2)
+        self.points.InsertNextPoint(self.p3)
+        self.points.InsertNextPoint(self.p4)
 
-    pyramid = vtkPyramid()
-    pyramid.GetPointIds().SetId(0, 0)
-    pyramid.GetPointIds().SetId(1, 1)
-    pyramid.GetPointIds().SetId(2, 2)
-    pyramid.GetPointIds().SetId(3, 3)
-    pyramid.GetPointIds().SetId(4, 4)
+        self.pyramid = vtkPyramid()
+        self.pyramid.GetPointIds().SetId(0, 0)
+        self.pyramid.GetPointIds().SetId(1, 1)
+        self.pyramid.GetPointIds().SetId(2, 2)
+        self.pyramid.GetPointIds().SetId(3, 3)
+        self.pyramid.GetPointIds().SetId(4, 4)
 
-    cells = vtkCellArray()
-    cells.InsertNextCell(pyramid)
+        self.cells = vtkCellArray()
+        self.cells.InsertNextCell(self.pyramid)
 
-    ug = vtkUnstructuredGrid()
-    ug.SetPoints(points)
-    ug.InsertNextCell(pyramid.GetCellType(), pyramid.GetPointIds())
+        self.ug = vtkUnstructuredGrid()
+        self.ug.SetPoints(self.points)
+        self.ug.InsertNextCell(self.pyramid.GetCellType(), self.pyramid.GetPointIds())
 
-    # Create an actor and mapper
-    mapper = vtkDataSetMapper()
-    mapper.SetInputData(ug)
+        # Create an actor and mapper
+        self.mapper = vtkDataSetMapper()
+        self.mapper.SetInputData(self.ug)
 
-    actor = vtkActor()
-    actor.SetMapper(mapper)
-    
-    actor.GetProperty().SetColor(colors.GetColor3d("grey"))
-    actor.GetProperty().SetRepresentationToSurface()
-    actor.GetProperty().EdgeVisibilityOn()
-    actor.GetProperty().SetEdgeColor(255,0,0)
-    actor.GetProperty().SetOpacity(0.3)
+        self.actor = vtkActor()
+        self.actor.SetMapper(self.mapper)
+        
+        self.actor.GetProperty().SetColor(self.colors.GetColor3d("grey"))
+        self.actor.GetProperty().SetRepresentationToSurface()
+        self.actor.GetProperty().EdgeVisibilityOn()
+        self.actor.GetProperty().SetEdgeColor(255,0,0)
+        self.actor.GetProperty().SetOpacity(0.3)
 
-    # Create a renderer, render window, and interactor
-    renderer = vtkRenderer()
-    renderWindow = vtkRenderWindow()
-    renderWindow.SetWindowName("Pyramid")
-    renderWindow.AddRenderer(renderer)
-    renderWindowInteractor = vtkRenderWindowInteractor()
-    renderWindowInteractor.SetRenderWindow(renderWindow)
+    def display(self):
+        # Create a renderer, render window, and interactor
+        self.renderer = vtkRenderer()
+        self.renderWindow = vtkRenderWindow()
+        self.renderWindow.SetWindowName("Pyramid")
+        self.renderWindow.AddRenderer(self.renderer)
+        self.renderWindowInteractor = vtkRenderWindowInteractor()
+        self.renderWindowInteractor.SetRenderWindow(self.renderWindow)
 
-    renderer.AddActor(actor)
+        self.renderer.AddActor(self.actor)
 
-    # Create a nice view
-    renderer.ResetCamera()
-    renderer.GetActiveCamera().Azimuth(180)
-    renderer.GetActiveCamera().Elevation(-20)
-    renderer.ResetCameraClippingRange()
+        # Create a nice view
+        self.renderer.ResetCamera()
+        self.renderer.GetActiveCamera().Azimuth(180)
+        self.renderer.GetActiveCamera().Elevation(-20)
+        self.renderer.ResetCameraClippingRange()
 
-    renderer.SetBackground(colors.GetColor3d("green"))
+        self.renderer.SetBackground(self.colors.GetColor3d("green"))
 
-    renderWindow.Render()
-    renderWindowInteractor.Start()
-
-
-if __name__ == '__main__':
-    main()
+        self.renderWindow.Render()
+        self.renderWindowInteractor.Start()
+        
+test =  WorkingVolume()
+test.display()
