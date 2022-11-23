@@ -90,8 +90,8 @@ class WorkingVolume():
         self.display()
         
 test =  WorkingVolume()
-# test.display()
-test.sideview()
+test.display()
+# test.sideview()
 
 #
 
