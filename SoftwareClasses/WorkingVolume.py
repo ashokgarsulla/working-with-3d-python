@@ -86,3 +86,13 @@ class WorkingVolume():
         
 test =  WorkingVolume()
 test.display()
+
+#
+
+
+# SetWorkingVolume(hFoV, vFov)
+# SetWorkingVolumeVisibility(isOn:bool)
+# SetPhantomVisibility(isOn:bool)
+# SetCurrentPhantomLocation(transform: vtk.vtkTransform)
+# SetTargetPhantomLocation(transform: vtk.vtkTransform)
+# SetWindowVisibility(isVisibile; bool)
