@@ -61,8 +61,7 @@ class WorkingVolume():
         self.actor.GetProperty().EdgeVisibilityOn()
         self.actor.GetProperty().SetEdgeColor(255,0,0)
         self.actor.GetProperty().SetOpacity(0.3)
-        pos = self.actor.GetPosition()
-        self.actor.SetPosition(self.value, pos[1], pos[2])
+       
 
 
     def display(self):
