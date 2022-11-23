@@ -26,7 +26,7 @@ from vtkmodules.vtkRenderingCore import (
     vtkRenderer
 )
 
-class WorkingVolume():
+class WarningWindow():
 
     def __init__(self):
         self.colors = vtkNamedColors()
@@ -121,8 +121,26 @@ class WorkingVolume():
         self.iren.Start()
 
     def display(self):
+        self.colors = vtkNamedColors()
+
+        self.filename = "holecube.stl"
+
+        self.reader = vtkSTLReader()
+        self.reader.SetFileName(self.filename)
+
+        self.mapper = vtkPolyDataMapper()
+        self.mapper.SetInputConnection(self.reader.GetOutputPort())
+
+        self.phantom = vtkActor()
+        self.phantom.SetMapper(self.mapper)
+        self.phantom.GetProperty().SetDiffuse(0.8)
+        self.phantom.GetProperty().SetDiffuseColor(self.colors.GetColor3d('LightSteelBlue'))
+        self.phantom.GetProperty().SetSpecular(0.3)
+        self.phantom.GetProperty().SetSpecularPower(60.0)
+
         self.ren1 = vtkRenderer()
         self.ren1.AddActor(self.actor)
+        self.ren1.AddActor(self.phantom)
         self.ren1.SetBackground(vtkNamedColors().GetColor3d("green"))
         self.ren1.SetViewport(0.5, 0.0, 1.0, 1.0)
 
@@ -152,7 +170,7 @@ class WorkingVolume():
     def sideview(self):
         self.display()
         
-test =  WorkingVolume()
+test =  WarningWindow()
 test.display()
 test.display_phantom()
 
