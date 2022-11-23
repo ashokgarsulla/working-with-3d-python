@@ -23,10 +23,10 @@ class WorkingVolume():
 
         self.points = vtkPoints()
 
-        self.p0 = [5.0, 5.0, 5.0]
-        self.p1 = [-5.0, 5.0, 5.0]
-        self.p2 = [-5.0, -5.0, 5.0]
-        self.p3 = [5.0, -5.0, 5.0]
+        self.p0 = [1.0, 1.0, 1.0]
+        self.p1 = [-1.0, 1.0, 1.0]
+        self.p2 = [-1.0, -1.0, 1.0]
+        self.p3 = [1.0, -1.0, 1.0]
         self.p4 = [0.0, 0.0, 0.0]
 
         self.points.InsertNextPoint(self.p0)
@@ -53,38 +53,55 @@ class WorkingVolume():
         self.mapper = vtkDataSetMapper()
         self.mapper.SetInputData(self.ug)
 
+        # Actor one
         self.actor = vtkActor()
         self.actor.SetMapper(self.mapper)
-        
+
         self.actor.GetProperty().SetColor(self.colors.GetColor3d("grey"))
         self.actor.GetProperty().SetRepresentationToSurface()
         self.actor.GetProperty().EdgeVisibilityOn()
         self.actor.GetProperty().SetEdgeColor(255,0,0)
         self.actor.GetProperty().SetOpacity(0.3)
+
+        # Actor two
+        self.actor1 = vtkActor()
+        self.actor1.SetMapper(self.mapper)
+        
+        self.actor1.GetProperty().SetColor(self.colors.GetColor3d("tamato"))
+        self.actor1.GetProperty().SetRepresentationToSurface()
+        self.actor1.GetProperty().EdgeVisibilityOn()
+        self.actor1.GetProperty().SetEdgeColor(255,0,0)
+        self.actor1.GetProperty().SetOpacity(0.3)
        
 
 
     def display(self):
-        # Create a renderer, render window, and interactor
-        self.renderer = vtkRenderer()
-        self.renderWindow = vtkRenderWindow()
-        self.renderWindow.SetWindowName("Pyramid")
-        self.renderWindow.AddRenderer(self.renderer)
-        self.renderWindowInteractor = vtkRenderWindowInteractor()
-        self.renderWindowInteractor.SetRenderWindow(self.renderWindow)
+        self.ren1 = vtkRenderer()
+        self.ren1.AddActor(self.actor)
+        self.ren1.SetBackground(vtkNamedColors().GetColor3d("green"))
+        self.ren1.SetViewport(0.5, 0.0, 1.0, 1.0)
 
-        self.renderer.AddActor(self.actor)
+        self.ren2 = vtkRenderer()
+        self.ren2.AddActor(self.actor1)
+        self.ren2.SetBackground(vtkNamedColors().GetColor3d("orange"))
+        self.ren2.SetViewport(0.0, 0.0, 0.5, 1.0)
 
-        # Create a nice view
-        self.renderer.ResetCamera()
-        self.renderer.GetActiveCamera().Azimuth(180)
-        self.renderer.GetActiveCamera().Elevation(-20)
-        self.renderer.ResetCameraClippingRange()
+        # Set the cameras far enough
+        self.ren1.GetActiveCamera().SetPosition(0, 0, 3)
+        self.ren2.GetActiveCamera().SetPosition(0, 0, 2)
 
-        self.renderer.SetBackground(self.colors.GetColor3d("green"))
 
-        self.renderWindow.Render()
-        self.renderWindowInteractor.Start()
+        # Finally we create the render window which will show up on the screen.
+        # We add our two renderers into the render window using AddRenderer.
+        renderWindow = vtkRenderWindow()
+        renderWindow.AddRenderer(self.ren1)
+        renderWindow.AddRenderer(self.ren2)
+
+        # Test VTK
+        interactor = vtkRenderWindowInteractor()
+        interactor.SetRenderWindow(renderWindow)
+        renderWindow.Render()
+        interactor.Start()
 
     def sideview(self):
         self.display()
