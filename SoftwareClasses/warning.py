@@ -15,6 +15,16 @@ from vtkmodules.vtkRenderingCore import (
     vtkRenderWindowInteractor,
     vtkRenderer
 )
+import vtkmodules.vtkRenderingOpenGL2
+from vtkmodules.vtkCommonColor import vtkNamedColors
+from vtkmodules.vtkIOGeometry import vtkSTLReader
+from vtkmodules.vtkRenderingCore import (
+    vtkActor,
+    vtkPolyDataMapper,
+    vtkRenderWindow,
+    vtkRenderWindowInteractor,
+    vtkRenderer
+)
 
 class WorkingVolume():
 
@@ -73,7 +83,42 @@ class WorkingVolume():
         self.actor1.GetProperty().SetEdgeColor(255,0,0)
         self.actor1.GetProperty().SetOpacity(0.3)
        
+    def display_phantom(self):
+        self.colors = vtkNamedColors()
 
+        self.filename = "holecube.stl"
+
+        self.reader = vtkSTLReader()
+        self.reader.SetFileName(self.filename)
+
+        self.mapper = vtkPolyDataMapper()
+        self.mapper.SetInputConnection(self.reader.GetOutputPort())
+
+        self.actor = vtkActor()
+        self.actor.SetMapper(self.mapper)
+        self.actor.GetProperty().SetDiffuse(0.8)
+        self.actor.GetProperty().SetDiffuseColor(self.colors.GetColor3d('LightSteelBlue'))
+        self.actor.GetProperty().SetSpecular(0.3)
+        self.actor.GetProperty().SetSpecularPower(60.0)
+
+        # Create a rendering window and renderer
+        self.ren = vtkRenderer()
+        self.renWin = vtkRenderWindow()
+        self.renWin.AddRenderer(self.ren)
+        self.renWin.SetWindowName('ReadSTL')
+
+        # Create a renderwindowinteractor
+        self.iren = vtkRenderWindowInteractor()
+        self.iren.SetRenderWindow(self.renWin)
+
+        # Assign actor to the renderer
+        self.ren.AddActor(self.actor)
+        self.ren.SetBackground(self.colors.GetColor3d('DarkOliveGreen'))
+
+        # Enable user interface interactor
+        self.iren.Initialize()
+        self.renWin.Render()
+        self.iren.Start()
 
     def display(self):
         self.ren1 = vtkRenderer()
@@ -96,6 +141,7 @@ class WorkingVolume():
         renderWindow = vtkRenderWindow()
         renderWindow.AddRenderer(self.ren1)
         renderWindow.AddRenderer(self.ren2)
+        renderWindow.SetWindowName('Warning')
 
         # Test VTK
         interactor = vtkRenderWindowInteractor()
@@ -108,7 +154,7 @@ class WorkingVolume():
         
 test =  WorkingVolume()
 test.display()
-# test.sideview()
+test.display_phantom()
 
 #
 
