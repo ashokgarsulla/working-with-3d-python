@@ -23,10 +23,10 @@ class WorkingVolume():
 
         self.points = vtkPoints()
 
-        self.p0 = [1.0, 1.0, 1.0]
-        self.p1 = [-2.0, 2.0, 2.0]
-        self.p2 = [-2.0, -2.0, 2.0]
-        self.p3 = [2.0, -2.0, 2.0]
+        self.p0 = [5.0, 5.0, 5.0]
+        self.p1 = [-5.0, 5.0, 5.0]
+        self.p2 = [-5.0, -5.0, 5.0]
+        self.p3 = [5.0, -5.0, 5.0]
         self.p4 = [0.0, 0.0, 0.0]
 
         self.points.InsertNextPoint(self.p0)
@@ -61,6 +61,9 @@ class WorkingVolume():
         self.actor.GetProperty().EdgeVisibilityOn()
         self.actor.GetProperty().SetEdgeColor(255,0,0)
         self.actor.GetProperty().SetOpacity(0.3)
+        pos = self.actor.GetPosition()
+        self.actor.SetPosition(self.value, pos[1], pos[2])
+
 
     def display(self):
         # Create a renderer, render window, and interactor
@@ -83,9 +86,13 @@ class WorkingVolume():
 
         self.renderWindow.Render()
         self.renderWindowInteractor.Start()
+
+    def sideview(self):
+        self.display()
         
 test =  WorkingVolume()
-test.display()
+# test.display()
+test.sideview()
 
 #
 
