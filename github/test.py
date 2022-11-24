@@ -37,21 +37,17 @@ class MainWindow(QtWidgets.QMainWindow):
  
     def __init__(self, parent = None):
         QtWidgets.QMainWindow.__init__(self, parent)
- 
         self.frame = QtWidgets.QFrame()
- 
-        self.vl = QtWidgets.QVBoxLayout()
+        self.setCentralWidget(self.frame)
+        self.vl = QtWidgets.QHBoxLayout()
+        self.frame.setLayout(self.vl)
         self.vtkWidget = QVTKRenderWindowInteractor(self.frame)
         self.vl.addWidget(self.vtkWidget)
  
-        self.ren = vtk.vtkRenderer()
-        self.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
+        self.renTop = vtk.vtkRenderer()
+        self.renFront = vtk.vtkRenderer()
         self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
- 
-        # # Create source
-        # source = vtk.vtkSphereSource()
-        # source.SetCenter(0, 0, 0)
-        # source.SetRadius(5.0)
+        self.iren.SetInteractorStyle(vtkInteractorStyleImage())
 
         self.colors = vtkNamedColors()
 
@@ -87,35 +83,40 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mapper = vtkDataSetMapper()
         self.mapper.SetInputData(self.ug)
  
-        # # Create a mapper
-        # mapper = vtk.vtkPolyDataMapper()
-        # mapper.SetInputConnection(source.GetOutputPort())
-        
- 
-        # # Create an actor
-        # actor = vtk.vtkActor()
-        # actor.SetMapper(mapper)
         self.actor = vtkActor()
         self.actor.SetMapper(self.mapper)
- 
-        # self.ren.AddActor(actor)
-        self.ren.AddActor(self.actor)
- 
-        # self.ren.ResetCamera()
-        self.ren.ResetCamera()
-    
         self.actor.GetProperty().SetRepresentationToSurface()
         self.actor.GetProperty().EdgeVisibilityOn()
         self.actor.GetProperty().SetEdgeColor(255,0,0)
         self.actor.GetProperty().SetOpacity(0.5)
-
-
-
-        self.frame.setLayout(self.vl)
-        self.setCentralWidget(self.frame)
  
+        self.renTop.AddActor(self.actor)
+        self.renTop.SetBackground(vtkNamedColors().GetColor3d("red"))
+        self.renTop.SetViewport(0.5, 0.0, 1.0, 1.0)
+
+        self.renFront.AddActor(self.actor)
+        self.renFront.SetBackground(vtkNamedColors().GetColor3d("grey"))
+        self.renFront.SetViewport(0.0, 0.0, 0.5, 1.0)
+
+        # Set the cameras far enough
+        self.renTop.GetActiveCamera().SetPosition(0, 10, 0.5)
+        self.renTop.GetActiveCamera().SetParallelProjection(True)
+        self.renTop.GetActiveCamera().SetFocalPoint(0,0,0.5)
+        self.renTop.GetActiveCamera().SetViewUp(1,0,0)
+
+        self.renFront.GetActiveCamera().SetPosition(0, 0, -10)
+        self.renFront.GetActiveCamera().SetParallelProjection(True)
+        self.renFront.GetActiveCamera().SetFocalPoint(0,0,0)
+        self.renFront.GetActiveCamera().SetViewUp(0,1,0)
+
+
+
+        self.vtkWidget.GetRenderWindow().AddRenderer(self.renTop)
+        self.vtkWidget.GetRenderWindow().AddRenderer(self.renFront)
+        self.vtkWidget.GetRenderWindow().Render()
+        self.iren.Start()
+        
         self.show()
-        self.iren.Initialize()
 
 
         
