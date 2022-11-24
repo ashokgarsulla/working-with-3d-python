@@ -81,6 +81,17 @@ class WarningWindow():
 
     def SetPhantomVisibility(self,isOn):
         if isOn:
+            pass
+
+
+    def SetCurrentPhantomLocation(transform):
+        pass
+
+    def SetTargetPhantomLocation(transform):
+        pass
+
+    def SetWindowVisibility(self,isVisibile):
+        if isVisibile:
             self.colors = vtkNamedColors()
 
             self.filename = "holecube.stl"
@@ -98,26 +109,24 @@ class WarningWindow():
             self.phantom.GetProperty().SetSpecular(0.3)
             self.phantom.GetProperty().SetSpecularPower(60.0)
             self.phantom.SetScale(1.0/200, 1.0/200, 1.0/200)
-            self.phantom.SetPosition(0,0,0.5)
+            
+
+            # phantom visiblity
+            self.phantom.SetVisibility(True)
+
+            # phantom position
+            self.phantom.SetPosition(0.5,0,0.5)
 
 
-    def SetCurrentPhantomLocation(transform):
-        pass
-
-    def SetTargetPhantomLocation(transform):
-        pass
-
-    def SetWindowVisibility(self,isVisibile):
-        if isVisibile:
             self.renTop = vtkRenderer()
             self.renTop.AddActor(self.actor)
-            # self.renTop.AddActor(self.phantom)
+            self.renTop.AddActor(self.phantom)
             self.renTop.SetBackground(vtkNamedColors().GetColor3d("grey"))
             self.renTop.SetViewport(0.5, 0.0, 1.0, 1.0)
 
             self.renFront = vtkRenderer()
             self.renFront.AddActor(self.actor)
-            # self.renFront.AddActor(self.phantom)
+            self.renFront.AddActor(self.phantom)
             self.renFront.SetBackground(vtkNamedColors().GetColor3d("grey"))
             self.renFront.SetViewport(0.0, 0.0, 0.5, 1.0)
 
