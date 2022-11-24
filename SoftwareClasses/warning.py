@@ -109,15 +109,35 @@ class WarningWindow():
 
     def SetWindowVisibility(self,isVisibile):
         if isVisibile:
+            # phantom
+            self.colors = vtkNamedColors()
+
+            self.filename = "holecube.stl"
+
+            self.reader = vtkSTLReader()
+            self.reader.SetFileName(self.filename)
+
+            self.mapper = vtkPolyDataMapper()
+            self.mapper.SetInputConnection(self.reader.GetOutputPort())
+
+            self.phantom = vtkActor()
+            self.phantom.SetMapper(self.mapper)
+            self.phantom.GetProperty().SetDiffuse(0.8)
+            self.phantom.GetProperty().SetDiffuseColor(self.colors.GetColor3d('LightSteelBlue'))
+            self.phantom.GetProperty().SetSpecular(0.3)
+            self.phantom.GetProperty().SetSpecularPower(60.0)
+            self.phantom.SetScale(1.0/200, 1.0/200, 1.0/200)
+            self.phantom.SetPosition(0,0,0.5)
+            # end phantom
             self.renTop = vtkRenderer()
             self.renTop.AddActor(self.actor)
-            # self.renTop.AddActor(self.phantom)
+            self.renTop.AddActor(self.phantom)
             self.renTop.SetBackground(vtkNamedColors().GetColor3d("grey"))
             self.renTop.SetViewport(0.5, 0.0, 1.0, 1.0)
 
             self.renFront = vtkRenderer()
             self.renFront.AddActor(self.actor)
-            # self.renFront.AddActor(self.phantom)
+            self.renFront.AddActor(self.phantom)
             self.renFront.SetBackground(vtkNamedColors().GetColor3d("grey"))
             self.renFront.SetViewport(0.0, 0.0, 0.5, 1.0)
 
