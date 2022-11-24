@@ -73,114 +73,86 @@ class WarningWindow():
         self.actor.GetProperty().SetEdgeColor(255,0,0)
         self.actor.GetProperty().SetOpacity(0.5)
 
-       
-    def display_phantom(self):
-        self.colors = vtkNamedColors()
+    def SetWorkingVolume(hFov, vFov):
+        pass
 
-        self.filename = "holecube.stl"
+    def SetWorkingVolumeVisibility(isOn):
+        pass
 
-        self.reader = vtkSTLReader()
-        self.reader.SetFileName(self.filename)
+    def SetPhantomVisibility(self,isOn):
+        if isOn:
+            self.colors = vtkNamedColors()
 
-        self.mapper = vtkPolyDataMapper()
-        self.mapper.SetInputConnection(self.reader.GetOutputPort())
+            self.filename = "holecube.stl"
 
-        self.actor = vtkActor()
-        self.actor.SetMapper(self.mapper)
-        self.actor.GetProperty().SetDiffuse(0.8)
-        self.actor.GetProperty().SetDiffuseColor(self.colors.GetColor3d('LightSteelBlue'))
-        self.actor.GetProperty().SetSpecular(0.3)
-        self.actor.GetProperty().SetSpecularPower(60.0)
+            self.reader = vtkSTLReader()
+            self.reader.SetFileName(self.filename)
 
-        # Create a rendering window and renderer
-        self.ren = vtkRenderer()
-        self.renWin = vtkRenderWindow()
-        self.renWin.AddRenderer(self.ren)
-        self.renWin.SetWindowName('ReadSTL')
+            self.mapper = vtkPolyDataMapper()
+            self.mapper.SetInputConnection(self.reader.GetOutputPort())
 
-        # Create a renderwindowinteractor
-        self.iren = vtkRenderWindowInteractor()
-        self.iren.SetRenderWindow(self.renWin)
-
-        # Assign actor to the renderer
-        self.ren.AddActor(self.actor)
-        self.ren.SetBackground(self.colors.GetColor3d('DarkOliveGreen'))
-
-        # Enable user interface interactor
-        self.iren.Initialize()
-        self.renWin.Render()
-        self.iren.Start()
-
-    def display(self):
-        # phantom
-        self.colors = vtkNamedColors()
-
-        self.filename = "holecube.stl"
-
-        self.reader = vtkSTLReader()
-        self.reader.SetFileName(self.filename)
-
-        self.mapper = vtkPolyDataMapper()
-        self.mapper.SetInputConnection(self.reader.GetOutputPort())
-
-        self.phantom = vtkActor()
-        self.phantom.SetMapper(self.mapper)
-        self.phantom.GetProperty().SetDiffuse(0.8)
-        self.phantom.GetProperty().SetDiffuseColor(self.colors.GetColor3d('LightSteelBlue'))
-        self.phantom.GetProperty().SetSpecular(0.3)
-        self.phantom.GetProperty().SetSpecularPower(60.0)
-        self.phantom.SetScale(1.0/200, 1.0/200, 1.0/200)
-        self.phantom.SetPosition(0,0,0.5)
-
-        self.renTop = vtkRenderer()
-        self.renTop.AddActor(self.actor)
-        self.renTop.AddActor(self.phantom)
-        self.renTop.SetBackground(vtkNamedColors().GetColor3d("grey"))
-        self.renTop.SetViewport(0.5, 0.0, 1.0, 1.0)
-
-        self.renFront = vtkRenderer()
-        self.renFront.AddActor(self.actor)
-        self.renFront.AddActor(self.phantom)
-        self.renFront.SetBackground(vtkNamedColors().GetColor3d("grey"))
-        self.renFront.SetViewport(0.0, 0.0, 0.5, 1.0)
-
-        # Set the cameras far enough
-        self.renTop.GetActiveCamera().SetPosition(0, 10, 0.5)
-        self.renTop.GetActiveCamera().SetParallelProjection(True)
-        self.renTop.GetActiveCamera().SetFocalPoint(0,0,0.5)
-        self.renTop.GetActiveCamera().SetViewUp(1,0,0)
-
-        self.renFront.GetActiveCamera().SetPosition(0, 0, -10)
-        self.renFront.GetActiveCamera().SetParallelProjection(True)
-        self.renFront.GetActiveCamera().SetFocalPoint(0,0,0)
-        self.renFront.GetActiveCamera().SetViewUp(0,1,0)
+            self.phantom = vtkActor()
+            self.phantom.SetMapper(self.mapper)
+            self.phantom.GetProperty().SetDiffuse(0.8)
+            self.phantom.GetProperty().SetDiffuseColor(self.colors.GetColor3d('LightSteelBlue'))
+            self.phantom.GetProperty().SetSpecular(0.3)
+            self.phantom.GetProperty().SetSpecularPower(60.0)
+            self.phantom.SetScale(1.0/200, 1.0/200, 1.0/200)
+            self.phantom.SetPosition(0,0,0.5)
 
 
-        # Finally we create the render window which will show up on the screen.
-        # We add our two renderers into the render window using AddRenderer.
-        renderWindow = vtkRenderWindow()
-        renderWindow.AddRenderer(self.renTop)
-        renderWindow.AddRenderer(self.renFront)
-        renderWindow.SetWindowName('Warning')
-        renderWindow.SetSize(1024,512)
+    def SetCurrentPhantomLocation(transform):
+        pass
 
-        # Test VTK
-        interactor = vtkRenderWindowInteractor()
-        interactor.SetRenderWindow(renderWindow)
-        interactor.SetInteractorStyle(vtkInteractorStyleImage())
-        renderWindow.Render()
-        interactor.Start()
+    def SetTargetPhantomLocation(transform):
+        pass
 
-    # def sideview(self):
-    #     self.display()
+    def SetWindowVisibility(self,isVisibile):
+        if isVisibile:
+            self.renTop = vtkRenderer()
+            self.renTop.AddActor(self.actor)
+            # self.renTop.AddActor(self.phantom)
+            self.renTop.SetBackground(vtkNamedColors().GetColor3d("grey"))
+            self.renTop.SetViewport(0.5, 0.0, 1.0, 1.0)
 
-   
-        
+            self.renFront = vtkRenderer()
+            self.renFront.AddActor(self.actor)
+            # self.renFront.AddActor(self.phantom)
+            self.renFront.SetBackground(vtkNamedColors().GetColor3d("grey"))
+            self.renFront.SetViewport(0.0, 0.0, 0.5, 1.0)
+
+            # Set the cameras far enough
+            self.renTop.GetActiveCamera().SetPosition(0, 10, 0.5)
+            self.renTop.GetActiveCamera().SetParallelProjection(True)
+            self.renTop.GetActiveCamera().SetFocalPoint(0,0,0.5)
+            self.renTop.GetActiveCamera().SetViewUp(1,0,0)
+
+            self.renFront.GetActiveCamera().SetPosition(0, 0, -10)
+            self.renFront.GetActiveCamera().SetParallelProjection(True)
+            self.renFront.GetActiveCamera().SetFocalPoint(0,0,0)
+            self.renFront.GetActiveCamera().SetViewUp(0,1,0)
+
+
+            # Finally we create the render window which will show up on the screen.
+            # We add our two renderers into the render window using AddRenderer.
+            renderWindow = vtkRenderWindow()
+            renderWindow.AddRenderer(self.renTop)
+            renderWindow.AddRenderer(self.renFront)
+            renderWindow.SetWindowName('Warning')
+            renderWindow.SetSize(1024,512)
+
+            # Test VTK
+            interactor = vtkRenderWindowInteractor()
+            interactor.SetRenderWindow(renderWindow)
+            interactor.SetInteractorStyle(vtkInteractorStyleImage())
+            renderWindow.Render()
+            interactor.Start()
+                
 test =  WarningWindow()
-test.display()
-test.display_phantom()
+# test.display()
+        
 
-#
+test.SetWindowVisibility(True)
 
 
 # SetWorkingVolume(hFoV, vFov)
