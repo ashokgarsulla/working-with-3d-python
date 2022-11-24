@@ -44,28 +44,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.vtkWidget = QVTKRenderWindowInteractor(self.frame)
         self.vl.addWidget(self.vtkWidget)
  
-        # self.ren = vtk.vtkRenderer()
-        # self.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
-        # self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
+        self.ren = vtk.vtkRenderer()
+        self.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
+        self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
  
         # # Create source
         # source = vtk.vtkSphereSource()
         # source.SetCenter(0, 0, 0)
         # source.SetRadius(5.0)
- 
-        # # Create a mapper
-        # mapper = vtk.vtkPolyDataMapper()
-        # mapper.SetInputConnection(source.GetOutputPort())
- 
-        # # Create an actor
-        # actor = vtk.vtkActor()
-        # actor.SetMapper(mapper)
- 
-        # self.ren.AddActor(actor)
- 
-        # self.ren.ResetCamera()
-
-
 
         self.colors = vtkNamedColors()
 
@@ -100,12 +86,24 @@ class MainWindow(QtWidgets.QMainWindow):
         # Create an actor and mapper
         self.mapper = vtkDataSetMapper()
         self.mapper.SetInputData(self.ug)
-
-        # Actor one
+ 
+        # # Create a mapper
+        # mapper = vtk.vtkPolyDataMapper()
+        # mapper.SetInputConnection(source.GetOutputPort())
+        
+ 
+        # # Create an actor
+        # actor = vtk.vtkActor()
+        # actor.SetMapper(mapper)
         self.actor = vtkActor()
         self.actor.SetMapper(self.mapper)
-
-
+ 
+        # self.ren.AddActor(actor)
+        self.ren.AddActor(self.actor)
+ 
+        # self.ren.ResetCamera()
+        self.ren.ResetCamera()
+    
         self.actor.GetProperty().SetRepresentationToSurface()
         self.actor.GetProperty().EdgeVisibilityOn()
         self.actor.GetProperty().SetEdgeColor(255,0,0)
@@ -117,7 +115,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.frame)
  
         self.show()
-        # self.iren.Initialize()
+        self.iren.Initialize()
 
 
         
