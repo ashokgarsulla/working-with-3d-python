@@ -44,14 +44,7 @@ def main():
     camera.SetViewUp(0.0,1.0,0.0)
     planesArray = [0] * 24
 
-    
-
-    print(width)
-    print(height)
-
-
     camera.GetFrustumPlanes(1.0, planesArray)
-    print(planesArray)
 
     planes = vtkPlanes()
     planes.SetFrustumPlanes(planesArray)
