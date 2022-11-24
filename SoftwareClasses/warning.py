@@ -1,5 +1,5 @@
 
-import vtkmodules.vtkInteractionStyle
+from vtkmodules.vtkInteractionStyle import vtkInteractorStyleImage
 import vtkmodules.vtkRenderingOpenGL2
 from vtkmodules.vtkCommonColor import vtkNamedColors
 from vtkmodules.vtkCommonCore import vtkPoints
@@ -67,21 +67,12 @@ class WarningWindow():
         self.actor = vtkActor()
         self.actor.SetMapper(self.mapper)
 
-        self.actor.GetProperty().SetColor(self.colors.GetColor3d("grey"))
+
         self.actor.GetProperty().SetRepresentationToSurface()
         self.actor.GetProperty().EdgeVisibilityOn()
         self.actor.GetProperty().SetEdgeColor(255,0,0)
-        self.actor.GetProperty().SetOpacity(0.3)
+        self.actor.GetProperty().SetOpacity(0.5)
 
-        # Actor two
-        self.actor1 = vtkActor()
-        self.actor1.SetMapper(self.mapper)
-        
-        self.actor1.GetProperty().SetColor(self.colors.GetColor3d("tamato"))
-        self.actor1.GetProperty().SetRepresentationToSurface()
-        self.actor1.GetProperty().EdgeVisibilityOn()
-        self.actor1.GetProperty().SetEdgeColor(255,0,0)
-        self.actor1.GetProperty().SetOpacity(0.3)
        
     def display_phantom(self):
         self.colors = vtkNamedColors()
@@ -121,6 +112,7 @@ class WarningWindow():
         self.iren.Start()
 
     def display(self):
+        # phantom
         self.colors = vtkNamedColors()
 
         self.filename = "holecube.stl"
@@ -137,38 +129,52 @@ class WarningWindow():
         self.phantom.GetProperty().SetDiffuseColor(self.colors.GetColor3d('LightSteelBlue'))
         self.phantom.GetProperty().SetSpecular(0.3)
         self.phantom.GetProperty().SetSpecularPower(60.0)
+        self.phantom.SetScale(1.0/200, 1.0/200, 1.0/200)
+        self.phantom.SetPosition(0,0,0.5)
 
-        self.ren1 = vtkRenderer()
-        self.ren1.AddActor(self.actor)
-        self.ren1.AddActor(self.phantom)
-        self.ren1.SetBackground(vtkNamedColors().GetColor3d("green"))
-        self.ren1.SetViewport(0.5, 0.0, 1.0, 1.0)
+        self.renTop = vtkRenderer()
+        self.renTop.AddActor(self.actor)
+        self.renTop.AddActor(self.phantom)
+        self.renTop.SetBackground(vtkNamedColors().GetColor3d("grey"))
+        self.renTop.SetViewport(0.5, 0.0, 1.0, 1.0)
 
-        self.ren2 = vtkRenderer()
-        self.ren2.AddActor(self.actor1)
-        self.ren2.SetBackground(vtkNamedColors().GetColor3d("orange"))
-        self.ren2.SetViewport(0.0, 0.0, 0.5, 1.0)
+        self.renFront = vtkRenderer()
+        self.renFront.AddActor(self.actor)
+        self.renFront.AddActor(self.phantom)
+        self.renFront.SetBackground(vtkNamedColors().GetColor3d("grey"))
+        self.renFront.SetViewport(0.0, 0.0, 0.5, 1.0)
 
         # Set the cameras far enough
-        self.ren1.GetActiveCamera().SetPosition(0, 0, 3)
-        self.ren2.GetActiveCamera().SetPosition(0, 0, 2)
+        self.renTop.GetActiveCamera().SetPosition(0, 10, 0.5)
+        self.renTop.GetActiveCamera().SetParallelProjection(True)
+        self.renTop.GetActiveCamera().SetFocalPoint(0,0,0.5)
+        self.renTop.GetActiveCamera().SetViewUp(1,0,0)
+
+        self.renFront.GetActiveCamera().SetPosition(0, 0, -10)
+        self.renFront.GetActiveCamera().SetParallelProjection(True)
+        self.renFront.GetActiveCamera().SetFocalPoint(0,0,0)
+        self.renFront.GetActiveCamera().SetViewUp(0,1,0)
 
 
         # Finally we create the render window which will show up on the screen.
         # We add our two renderers into the render window using AddRenderer.
         renderWindow = vtkRenderWindow()
-        renderWindow.AddRenderer(self.ren1)
-        renderWindow.AddRenderer(self.ren2)
+        renderWindow.AddRenderer(self.renTop)
+        renderWindow.AddRenderer(self.renFront)
         renderWindow.SetWindowName('Warning')
+        renderWindow.SetSize(1024,512)
 
         # Test VTK
         interactor = vtkRenderWindowInteractor()
         interactor.SetRenderWindow(renderWindow)
+        interactor.SetInteractorStyle(vtkInteractorStyleImage())
         renderWindow.Render()
         interactor.Start()
 
-    def sideview(self):
-        self.display()
+    # def sideview(self):
+    #     self.display()
+
+   
         
 test =  WarningWindow()
 test.display()

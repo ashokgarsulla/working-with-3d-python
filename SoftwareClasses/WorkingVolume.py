@@ -15,6 +15,7 @@ from vtkmodules.vtkRenderingCore import (
     vtkRenderWindowInteractor,
     vtkRenderer
 )
+from . warning import WarningWindow
 
 class WorkingVolume():
 
@@ -83,9 +84,24 @@ class WorkingVolume():
 
         self.renderWindow.Render()
         self.renderWindowInteractor.Start()
+    
+    def SetWindowVisibility(self,isVisibile):
+        """window  will visible when not in 
+        Working volume"""
+        if isVisibile:
+            self.display()
+
+    def SetPhantomVisibility(self,isOn):
+        """Phantom will display when isOn : True
+        """
+        if isOn:
+            self.
+
+
         
 test =  WorkingVolume()
-test.display()
+# test.display()
+test.SetWindowVisibility(True)
 
 #
 
