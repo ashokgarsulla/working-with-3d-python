@@ -18,30 +18,50 @@ from vtkmodules.vtkRenderingCore import (
     vtkRenderWindowInteractor,
     vtkRenderer
 )
+from math import *
 
 
 def main():
     colors = vtkNamedColors()
 
     camera = vtkCamera()
-    camera.SetClippingRange(0.1, 0.4)
+    pixelToMetricScale = 0.00585999992
+    width = 1920 * pixelToMetricScale
+    height = 1200 * pixelToMetricScale
+    focalLength = 8.3
+    viewAngle = 2*degrees(atan(height*0.5/focalLength))
+    
+    nearZ = 1000.0
+    farZ = 2200.0
+    
+    camera.SetParallelProjection(False)
+    camera.SetClippingRange(nearZ, farZ)
+    camera.SetPosition(0.0,0.0,nearZ)
+    camera.SetFocalPoint(0.0,0.0,0.0)
+    camera.SetUseExplicitAspectRatio(True)
+    camera.SetExplicitAspectRatio(width/height)
+    camera.SetViewAngle(viewAngle)
+    camera.SetViewUp(0.0,1.0,0.0)
     planesArray = [0] * 24
 
+    
+
+    print(width)
+    print(height)
+
+
     camera.GetFrustumPlanes(1.0, planesArray)
+    print(planesArray)
 
     planes = vtkPlanes()
     planes.SetFrustumPlanes(planesArray)
 
     frustumSource = vtkFrustumSource()
-    frustumSource.ShowLinesOff()
+    frustumSource.ShowLinesOn()
     frustumSource.SetPlanes(planes)
 
-    shrink = vtkShrinkPolyData()
-    shrink.SetInputConnection(frustumSource.GetOutputPort())
-    shrink.SetShrinkFactor(.9)
-
     mapper = vtkPolyDataMapper()
-    mapper.SetInputConnection(shrink.GetOutputPort())
+    mapper.SetInputConnection(frustumSource.GetOutputPort())
 
     back = vtkProperty()
     back.SetColor(colors.GetColor3d("Tomato"))
@@ -49,7 +69,7 @@ def main():
     actor = vtkActor()
     actor.SetMapper(mapper)
     actor.GetProperty().EdgeVisibilityOn()
-    actor.GetProperty().SetColor(colors.GetColor3d("Banana"))
+    actor.GetProperty().SetColor(colors.GetColor3d("red"))
     actor.SetBackfaceProperty(back)
 
     # a renderer and render window
