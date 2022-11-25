@@ -64,6 +64,22 @@ class MainWindow(QtWidgets.QMainWindow):
         frustumSource = vtkFrustumSource()
         frustumSource.SetPlanes(planes)
         return frustumSource
+    
+    def SetPhantomVisibility(self,isOn):
+        if isOn:
+            self.phantom.SetVisibility(True)
+        else:
+            self.phantom.SetVisibility(False)
+
+    def SetCurrentPhantomLocation(self,x=0.5,y=0,z=0.5):
+        self.phantom.SetPosition(x,y,z)
+    
+    def SetPhantomVisibility(self,isOn):
+        if isOn:
+            self.phantom.SetVisibility(True)
+        else:
+            self.phantom.SetVisibility(False)
+
 
     def __init__(self, parent = None):
         QtWidgets.QMainWindow.__init__(self, parent)
@@ -105,7 +121,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.targetSphereActor = vtk.vtkActor()
         self.targetSphereActor.SetMapper(self.targetSphereMapper)
         self.targetSphereActor.GetProperty().SetColor(self.colors.GetColor3d("red"))
- 
+
+        # Phantom Code
+        self.colors = vtkNamedColors()
+
+        self.filename = "holecube.stl"
+
+        self.reader = vtkSTLReader()
+        self.reader.SetFileName(self.filename)
+
+        self.mapper = vtkPolyDataMapper()
+        self.mapper.SetInputConnection(self.reader.GetOutputPort())
+
+        self.phantom = vtkActor()
+        self.phantom.SetMapper(self.mapper)
+        self.phantom.GetProperty().SetDiffuse(0.8)
+        self.phantom.GetProperty().SetDiffuseColor(self.colors.GetColor3d('LightSteelBlue'))
+        self.phantom.GetProperty().SetSpecular(0.3)
+        self.phantom.GetProperty().SetSpecularPower(60.0)
+        self.phantom.SetScale(1.0/200, 1.0/200, 1.0/200)
+        
+        self.renTop.AddActor(self.phantom)
         self.renTop.AddActor(self.targetSphereActor)
         self.renTop.AddActor(self.frustumActor)
         self.renTop.SetBackground(vtkNamedColors().GetColor3d("grey"))
