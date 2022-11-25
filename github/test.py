@@ -8,7 +8,9 @@ from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtkmodules.vtkInteractionStyle import vtkInteractorStyleImage
 import vtkmodules.vtkRenderingOpenGL2
 from vtkmodules.vtkCommonColor import vtkNamedColors
-from vtkmodules.vtkCommonCore import vtkPoints
+from vtkmodules.vtkCommonDataModel import vtkPlanes
+from vtkmodules.vtkFiltersSources import vtkFrustumSource
+from vtkmodules.vtkCommonColor import vtkNamedColors
 from vtkmodules.vtkCommonDataModel import (
     vtkCellArray,
     vtkPyramid,
@@ -27,13 +29,42 @@ from vtkmodules.vtkIOGeometry import vtkSTLReader
 from vtkmodules.vtkRenderingCore import (
     vtkActor,
     vtkPolyDataMapper,
+    vtkCamera,
+    vtkProperty,
     vtkRenderWindow,
     vtkRenderWindowInteractor,
     vtkRenderer
 )
+from math import *
 
  
 class MainWindow(QtWidgets.QMainWindow):
+
+    def __getCameraFrustum(self, focalLength=8.3, pxHeight=1200, pxWidth=1920, nearZ=1000.0, farZ=2200.0, pixelToMetricScale=0.00586):
+        camera = vtkCamera()
+        width = pxWidth * pixelToMetricScale
+        height = pxHeight * pixelToMetricScale
+        viewAngle = 2*degrees(atan(height*0.5/focalLength))
+        
+        camera.SetParallelProjection(False)
+        camera.SetClippingRange(nearZ, farZ)
+        camera.SetPosition(0.0,0.0,0.0)
+        camera.SetFocalPoint(0.0,0.0,focalLength)
+        camera.SetUseExplicitAspectRatio(True)
+        camera.SetExplicitAspectRatio(width/height)
+        camera.SetViewAngle(viewAngle)
+        camera.SetViewUp(0.0,-1.0,0.0)
+
+        planesArray = [0] * 24
+        camera.GetFrustumPlanes(1.0, planesArray)
+
+        planes = vtkPlanes()
+        planes.SetFrustumPlanes(planesArray)
+
+        frustumSource = vtkFrustumSource()
+        frustumSource.SetPlanes(planes)
+        return frustumSource
+
  
     def __init__(self, parent = None):
         QtWidgets.QMainWindow.__init__(self, parent)
@@ -47,67 +78,49 @@ class MainWindow(QtWidgets.QMainWindow):
         self.renTop = vtk.vtkRenderer()
         self.renFront = vtk.vtkRenderer()
         self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
-        self.iren.SetInteractorStyle(vtkInteractorStyleImage())
+        #self.iren.SetInteractorStyle(vtkInteractorStyleImage())
 
         self.colors = vtkNamedColors()
 
-        self.points = vtkPoints()
 
-        self.p0 = [1.0, 1.0, 1.0]
-        self.p1 = [-1.0, 1.0, 1.0]
-        self.p2 = [-1.0, -1.0, 1.0]
-        self.p3 = [1.0, -1.0, 1.0]
-        self.p4 = [0.0, 0.0, 0.0]
+        self.frustumSource = self.__getCameraFrustum()
+        self.frustumMapper = vtkPolyDataMapper()
+        self.frustumMapper.SetInputConnection(self.frustumSource.GetOutputPort())
+        self.frustumActor = vtkActor()
+        self.frustumActor.SetMapper(self.frustumMapper)
+        self.frustumActor.GetProperty().EdgeVisibilityOn()
+        self.frustumActor.GetProperty().SetColor(self.colors.GetColor3d("green"))
+        self.frustumActor.GetProperty().SetOpacity(0.3)
 
-        self.points.InsertNextPoint(self.p0)
-        self.points.InsertNextPoint(self.p1)
-        self.points.InsertNextPoint(self.p2)
-        self.points.InsertNextPoint(self.p3)
-        self.points.InsertNextPoint(self.p4)
-
-        self.pyramid = vtkPyramid()
-        self.pyramid.GetPointIds().SetId(0, 0)
-        self.pyramid.GetPointIds().SetId(1, 1)
-        self.pyramid.GetPointIds().SetId(2, 2)
-        self.pyramid.GetPointIds().SetId(3, 3)
-        self.pyramid.GetPointIds().SetId(4, 4)
-
-        self.cells = vtkCellArray()
-        self.cells.InsertNextCell(self.pyramid)
-
-        self.ug = vtkUnstructuredGrid()
-        self.ug.SetPoints(self.points)
-        self.ug.InsertNextCell(self.pyramid.GetCellType(), self.pyramid.GetPointIds())
-
-        # Create an actor and mapper
-        self.mapper = vtkDataSetMapper()
-        self.mapper.SetInputData(self.ug)
+        self.targetSphere = vtk.vtkSphereSource()
+        self.targetSphere.SetRadius(50.0)
+        self.targetSphereMapper = vtk.vtkPolyDataMapper()
+        self.targetSphereMapper.SetInputConnection(self.targetSphere.GetOutputPort())
+        self.targetSphereActor = vtk.vtkActor()
+        self.targetSphereActor.SetMapper(self.targetSphereMapper)
+        self.targetSphereActor.GetProperty().SetColor(self.colors.GetColor3d("red"))
  
-        self.actor = vtkActor()
-        self.actor.SetMapper(self.mapper)
-        self.actor.GetProperty().SetRepresentationToSurface()
-        self.actor.GetProperty().EdgeVisibilityOn()
-        self.actor.GetProperty().SetEdgeColor(255,0,0)
-        self.actor.GetProperty().SetOpacity(0.5)
- 
-        self.renTop.AddActor(self.actor)
-        self.renTop.SetBackground(vtkNamedColors().GetColor3d("red"))
+        self.renTop.AddActor(self.targetSphereActor)
+        self.renTop.AddActor(self.frustumActor)
+        self.renTop.SetBackground(vtkNamedColors().GetColor3d("grey"))
         self.renTop.SetViewport(0.5, 0.0, 1.0, 1.0)
 
-        self.renFront.AddActor(self.actor)
+        self.renFront.AddActor(self.frustumActor)
         self.renFront.SetBackground(vtkNamedColors().GetColor3d("grey"))
         self.renFront.SetViewport(0.0, 0.0, 0.5, 1.0)
 
         # Set the cameras far enough
-        self.renTop.GetActiveCamera().SetPosition(0, 10, 0.5)
         self.renTop.GetActiveCamera().SetParallelProjection(True)
-        self.renTop.GetActiveCamera().SetFocalPoint(0,0,0.5)
-        self.renTop.GetActiveCamera().SetViewUp(1,0,0)
+        self.renTop.GetActiveCamera().SetPosition(0, 2*1200*0.00586*2200/8.3, 0.5*2200)
+        self.renTop.GetActiveCamera().SetFocalPoint(0, 0, 0.5*2200)
+        self.renTop.GetActiveCamera().SetViewUp(-1,0,0)
+        #self.renTop.GetActiveCamera().SetWindowCenter(0.5,0)
 
-        self.renFront.GetActiveCamera().SetPosition(0, 0, -10)
         self.renFront.GetActiveCamera().SetParallelProjection(True)
-        self.renFront.GetActiveCamera().SetFocalPoint(0,0,0)
-        self.renFront.GetActiveCamera().SetViewUp(0,1,0)
+        self.renFront.GetActiveCamera().SetPosition(0, 0, -10*2200)
+        self.renFront.GetActiveCamera().SetFocalPoint(0, 0, 0)
+        self.renFront.GetActiveCamera().SetViewUp(0,-1,0)
+        #self.renFront.GetActiveCamera().SetFocalPoint(0, 0, 1)
 
 
 
