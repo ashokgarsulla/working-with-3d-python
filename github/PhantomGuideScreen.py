@@ -30,7 +30,6 @@ from vtkmodules.vtkRenderingCore import (
     vtkActor,
     vtkPolyDataMapper,
     vtkCamera,
-    vtkProperty,
     vtkRenderWindow,
     vtkRenderWindowInteractor,
     vtkRenderer
@@ -65,23 +64,20 @@ class MainWindow(QtWidgets.QMainWindow):
         frustumSource.SetPlanes(planes)
         return frustumSource
     
-    def SetPhantomVisibility(self,isOn):
-        if isOn:
-            self.phantom.SetVisibility(True)
-        else:
-            self.phantom.SetVisibility(False)
+    def SetPhantomVisibility(self,isVisible:bool):
+        self.phantom.SetVisibility(isVisible)
 
     def SetCurrentPhantomLocation(self,x=0.5,y=0,z=0.5):
         self.phantom.SetPosition(x,y,z)
     
-    def SetPhantomVisibility(self,isOn):
-        if isOn:
-            self.phantom.SetVisibility(True)
-        else:
-            self.phantom.SetVisibility(False)
+    def SetPhantomVisibility(self,isVisible:bool):
+        self.phantom.SetVisibility(isVisible)
 
     def SetTargetSphereScale(self,scale):
         self.targetSphereActor.SetScale(scale,scale,scale)
+        
+    def SetPhantomScale(self,scale):
+        self.phantom.SetScale(scale,scale,scale)
 
 
     def __init__(self, parent = None):
@@ -95,9 +91,33 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setFixedHeight(hieght)
 
         self.frame = QtWidgets.QFrame()
-        self.setCentralWidget(self.frame)
+
+
+        app.setStyleSheet("QLabel{font-size: 18pt;}")
+        frontLabel = QtWidgets.QLabel(self)
+        frontLabel.setText("Front View")
+        frontLabel.setAlignment(QtCore.Qt.AlignCenter)
+    
+        topLabel = QtWidgets.QLabel(self)
+        topLabel.setText("Top View")
+        topLabel.setAlignment(QtCore.Qt.AlignCenter)
+
+        textHBox = QtWidgets.QHBoxLayout()
+        textHBox.addWidget(frontLabel)
+        textHBox.addWidget(topLabel)
+        
         self.vl = QtWidgets.QHBoxLayout()
-        self.frame.setLayout(self.vl)
+
+        vLayout = QtWidgets.QVBoxLayout()
+        vLayout.addLayout(textHBox)
+        vLayout.addLayout(self.vl)
+        
+        # self.frame.setLayout(self.vl)
+        self.frame.setLayout(vLayout)
+
+
+        self.setCentralWidget(self.frame)
+        # self.setCentralWidget(vLayout)
         self.vtkWidget = QVTKRenderWindowInteractor(self.frame)
         self.vl.addWidget(self.vtkWidget)
  
@@ -129,7 +149,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Phantom Code
         self.colors = vtkNamedColors()
 
-        self.filename = "holecube.stl"
+        self.filename = "AccuracyTestingJigMainBody.stl"
 
         self.reader = vtkSTLReader()
         self.reader.SetFileName(self.filename)
@@ -144,6 +164,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.phantom.GetProperty().SetSpecular(0.3)
         self.phantom.GetProperty().SetSpecularPower(60.0)
         # self.phantom.SetScale(1.0/200, 1.0/200, 1.0/200)
+        self.phantom.SetScale(3, 3, 3)
         
         self.renTop.AddActor(self.phantom)
         self.renTop.AddActor(self.targetSphereActor)
