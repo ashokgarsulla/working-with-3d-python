@@ -64,6 +64,22 @@ class MainWindow(QtWidgets.QMainWindow):
         frustumSource = vtkFrustumSource()
         frustumSource.SetPlanes(planes)
         return frustumSource
+    
+    def SetPhantomVisibility(self,isOn):
+        if isOn:
+            self.phantom.SetVisibility(True)
+        else:
+            self.phantom.SetVisibility(False)
+
+    def SetCurrentPhantomLocation(self,x=0.5,y=0,z=0.5):
+        self.phantom.SetPosition(x,y,z)
+    
+    def SetPhantomVisibility(self,isOn):
+        if isOn:
+            self.phantom.SetVisibility(True)
+        else:
+            self.phantom.SetVisibility(False)
+
 
     def __init__(self, parent = None):
         QtWidgets.QMainWindow.__init__(self, parent)
@@ -106,6 +122,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.targetSphereActor.SetMapper(self.targetSphereMapper)
         self.targetSphereActor.GetProperty().SetColor(self.colors.GetColor3d("red"))
 
+        # Phantom Code
         self.colors = vtkNamedColors()
 
         self.filename = "holecube.stl"
@@ -125,7 +142,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.phantom.SetScale(1.0/200, 1.0/200, 1.0/200)
         
         self.renTop = vtkRenderer()
-        self.renTop.AddActor(self.actor)
         self.renTop.AddActor(self.phantom)
         self.renTop.SetBackground(vtkNamedColors().GetColor3d("grey"))
         self.renTop.SetViewport(0.5, 0.0, 1.0, 1.0)
