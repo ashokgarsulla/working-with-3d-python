@@ -80,6 +80,9 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.phantom.SetVisibility(False)
 
+    def SetTargetSphereScale(self,scale):
+        self.targetSphereActor.SetScale(scale,scale,scale)
+
 
     def __init__(self, parent = None):
         QtWidgets.QMainWindow.__init__(self, parent)
@@ -101,7 +104,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.renTop = vtk.vtkRenderer()
         self.renFront = vtk.vtkRenderer()
         self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
-        #self.iren.SetInteractorStyle(vtkInteractorStyleImage())
+        self.iren.SetInteractorStyle(vtkInteractorStyleImage())
 
         self.colors = vtkNamedColors()
 
@@ -121,6 +124,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.targetSphereActor = vtk.vtkActor()
         self.targetSphereActor.SetMapper(self.targetSphereMapper)
         self.targetSphereActor.GetProperty().SetColor(self.colors.GetColor3d("red"))
+        # self.SetTargetSphereScale(3)
 
         # Phantom Code
         self.colors = vtkNamedColors()
@@ -139,7 +143,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.phantom.GetProperty().SetDiffuseColor(self.colors.GetColor3d('LightSteelBlue'))
         self.phantom.GetProperty().SetSpecular(0.3)
         self.phantom.GetProperty().SetSpecularPower(60.0)
-        self.phantom.SetScale(1.0/200, 1.0/200, 1.0/200)
+        # self.phantom.SetScale(1.0/200, 1.0/200, 1.0/200)
         
         self.renTop.AddActor(self.phantom)
         self.renTop.AddActor(self.targetSphereActor)
@@ -148,6 +152,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.renTop.SetViewport(0.5, 0.0, 1.0, 1.0)
 
         self.renFront.AddActor(self.frustumActor)
+        self.renFront.AddActor(self.phantom)
+        self.renFront.AddActor(self.targetSphereActor)
         self.renFront.SetBackground(vtkNamedColors().GetColor3d("grey"))
         self.renFront.SetViewport(0.0, 0.0, 0.5, 1.0)
 
@@ -155,7 +161,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.renTop.GetActiveCamera().SetParallelProjection(True)
         self.renTop.GetActiveCamera().SetPosition(0, 2*1200*0.00586*2200/8.3, 0.5*2200)
         self.renTop.GetActiveCamera().SetFocalPoint(0, 0, 0.5*2200)
-        self.renTop.GetActiveCamera().SetViewUp(-1,0,0)
+        self.renTop.GetActiveCamera().SetViewUp(1,0,0)
         #self.renTop.GetActiveCamera().SetWindowCenter(0.5,0)
 
         self.renFront.GetActiveCamera().SetParallelProjection(True)
@@ -167,6 +173,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.vtkWidget.GetRenderWindow().AddRenderer(self.renTop)
         self.vtkWidget.GetRenderWindow().AddRenderer(self.renFront)
         self.vtkWidget.GetRenderWindow().Render()
+        self.renTop.ResetCamera()
+        self.renFront.ResetCamera()
         self.iren.Start()
         
         self.show()
