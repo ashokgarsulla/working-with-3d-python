@@ -115,17 +115,6 @@ class WarningWindow():
             self.phantom.GetProperty().SetSpecularPower(60.0)
             self.phantom.SetScale(1.0/200, 1.0/200, 1.0/200)
             
-
-            # phantom visiblity
-            self.SetPhantomVisibility(True)
-
-            # phantom position
-            self.SetCurrentPhantomLocation(0,.5,.5)
-
-            # Working volume visiblity
-            self.SetWorkingVolumeVisibility(False)
-
-
             self.renTop = vtkRenderer()
             self.renTop.AddActor(self.actor)
             self.renTop.AddActor(self.phantom)
@@ -149,15 +138,12 @@ class WarningWindow():
             self.renFront.GetActiveCamera().SetFocalPoint(0,0,0)
             self.renFront.GetActiveCamera().SetViewUp(0,1,0)
 
-            # Finally we create the render window which will show up on the screen.
-            # We add our two renderers into the render window using AddRenderer.
             renderWindow = vtkRenderWindow()
             renderWindow.AddRenderer(self.renTop)
             renderWindow.AddRenderer(self.renFront)
             renderWindow.SetWindowName('Warning')
             renderWindow.SetSize(1024,512)
 
-            # Test VTK
             interactor = vtkRenderWindowInteractor()
             interactor.SetRenderWindow(renderWindow)
             interactor.SetInteractorStyle(vtkInteractorStyleImage())
@@ -165,7 +151,6 @@ class WarningWindow():
             interactor.Start()
                 
 test =  WarningWindow()
-# test.display()
 test.SetWindowVisibility(True)
 
 
