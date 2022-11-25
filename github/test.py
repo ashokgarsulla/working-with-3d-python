@@ -65,9 +65,16 @@ class MainWindow(QtWidgets.QMainWindow):
         frustumSource.SetPlanes(planes)
         return frustumSource
 
- 
     def __init__(self, parent = None):
         QtWidgets.QMainWindow.__init__(self, parent)
+
+        self.setWindowTitle("Warning")
+        
+        width = 1024
+        hieght = 600
+        self.setFixedWidth(width)
+        self.setFixedHeight(hieght)
+
         self.frame = QtWidgets.QFrame()
         self.setCentralWidget(self.frame)
         self.vl = QtWidgets.QHBoxLayout()
@@ -81,7 +88,6 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.iren.SetInteractorStyle(vtkInteractorStyleImage())
 
         self.colors = vtkNamedColors()
-
 
         self.frustumSource = self.__getCameraFrustum()
         self.frustumMapper = vtkPolyDataMapper()
@@ -122,18 +128,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.renFront.GetActiveCamera().SetViewUp(0,-1,0)
         #self.renFront.GetActiveCamera().SetFocalPoint(0, 0, 1)
 
-
-
         self.vtkWidget.GetRenderWindow().AddRenderer(self.renTop)
         self.vtkWidget.GetRenderWindow().AddRenderer(self.renFront)
         self.vtkWidget.GetRenderWindow().Render()
         self.iren.Start()
         
         self.show()
-
-
-        
- 
  
 if __name__ == "__main__":
  
