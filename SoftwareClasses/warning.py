@@ -76,19 +76,24 @@ class WarningWindow():
     def SetWorkingVolume(hFov, vFov):
         pass
 
-    def SetWorkingVolumeVisibility(isOn):
+    def SetWorkingVolumeVisibility(self,isOn):
+        if isOn:
+            self.actor.SetVisibility(True)
+        else:
+            self.actor.SetVisibility(False)
+
+    def SetCurrentPhantomLocation(self,x=0.5,y=0,z=0.5):
+        self.phantom.SetPosition(x,y,z)
+       
+
+    def SetTargetPhantomLocation(transform):
         pass
 
     def SetPhantomVisibility(self,isOn):
         if isOn:
-            pass
-
-
-    def SetCurrentPhantomLocation(transform):
-        pass
-
-    def SetTargetPhantomLocation(transform):
-        pass
+            self.phantom.SetVisibility(True)
+        else:
+            self.phantom.SetVisibility(False)
 
     def SetWindowVisibility(self,isVisibile):
         if isVisibile:
@@ -112,10 +117,13 @@ class WarningWindow():
             
 
             # phantom visiblity
-            self.phantom.SetVisibility(True)
+            self.SetPhantomVisibility(True)
 
             # phantom position
-            self.phantom.SetPosition(0.5,0,0.5)
+            self.SetCurrentPhantomLocation(0,.5,.5)
+
+            # Working volume visiblity
+            self.SetWorkingVolumeVisibility(False)
 
 
             self.renTop = vtkRenderer()
@@ -129,7 +137,7 @@ class WarningWindow():
             self.renFront.AddActor(self.phantom)
             self.renFront.SetBackground(vtkNamedColors().GetColor3d("grey"))
             self.renFront.SetViewport(0.0, 0.0, 0.5, 1.0)
-
+            
             # Set the cameras far enough
             self.renTop.GetActiveCamera().SetPosition(0, 10, 0.5)
             self.renTop.GetActiveCamera().SetParallelProjection(True)
@@ -140,7 +148,6 @@ class WarningWindow():
             self.renFront.GetActiveCamera().SetParallelProjection(True)
             self.renFront.GetActiveCamera().SetFocalPoint(0,0,0)
             self.renFront.GetActiveCamera().SetViewUp(0,1,0)
-
 
             # Finally we create the render window which will show up on the screen.
             # We add our two renderers into the render window using AddRenderer.
@@ -159,9 +166,8 @@ class WarningWindow():
                 
 test =  WarningWindow()
 # test.display()
-        
-
 test.SetWindowVisibility(True)
+
 
 
 # SetWorkingVolume(hFoV, vFov)
