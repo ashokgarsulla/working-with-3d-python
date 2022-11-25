@@ -141,13 +141,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.phantom.GetProperty().SetSpecularPower(60.0)
         self.phantom.SetScale(1.0/200, 1.0/200, 1.0/200)
         
-        self.renTop = vtkRenderer()
-        self.renTop.AddActor(self.phantom)
-        self.renTop.SetBackground(vtkNamedColors().GetColor3d("grey"))
-        self.renTop.SetViewport(0.5, 0.0, 1.0, 1.0)
  
         self.renTop.AddActor(self.targetSphereActor)
         self.renTop.AddActor(self.frustumActor)
+        self.renTop.AddActor(self.phantom)
         self.renTop.SetBackground(vtkNamedColors().GetColor3d("grey"))
         self.renTop.SetViewport(0.5, 0.0, 1.0, 1.0)
 
