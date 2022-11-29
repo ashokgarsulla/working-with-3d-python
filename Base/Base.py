@@ -24,13 +24,20 @@ class BaseWindow(QMainWindow):
         self.probeActor.SetPosition(x,y,z)
 
     def HighlightPhantomPoint(self,pointID:int,color:str):
-        pass
+        self.targetSphereActor.SetPosition(self.points[pointID][0],self.points[pointID][1],self.points[pointID][2])
+        self.targetSphereActor.GetProperty().SetColor(self.colors.GetColor3d(color))
 
     def RemoveHighlight(self,pointID):
-        pass
-
+        self.targetSphereActor.SetPosition(self.points[pointID][0],self.points[pointID][1],self.points[pointID][2])
+        self.targetSphereActor.SetVisibility(False)
+    
     def RemoveAllHighlights(self):
-        pass
+        self.targetSphereActor.SetVisibility(False)
+        self.p2Actor.SetVisibility(False)
+        self.p3Actor.SetVisibility(False)
+        self.p4Actor.SetVisibility(False)
+        self.p5Actor.SetVisibility(False)
+        self.p6Actor.SetVisibility(False)
     
 
     def __init__(self, parent=None):
@@ -44,7 +51,7 @@ class BaseWindow(QMainWindow):
         self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
 
         # points
-        points = {
+        self.points = {
             1:[0,0,0], 
             2:[0,14.44,0], 
             3:[14.44,0,0], 
@@ -110,9 +117,7 @@ class BaseWindow(QMainWindow):
         self.targetSphereActor = vtk.vtkActor()
         self.targetSphereActor.SetMapper(self.targetSphereMapper)
         self.targetSphereActor.GetProperty().SetColor(self.colors.GetColor3d("red"))
-        # self.SetTargetSphereScale(3)
-        # self.targetSphereActor.SetScale(0.1, 0.1, 0.1)
-        self.targetSphereActor.SetPosition(points[44][0],points[44][1],points[44][2])
+        self.targetSphereActor.SetPosition(self.points[1][0],self.points[1][1],self.points[1][2])
 
         self.phantom = vtkActor()
         self.phantom.SetMapper(self.mapper)
@@ -138,12 +143,60 @@ class BaseWindow(QMainWindow):
         self.probeActor.GetProperty().SetDiffuseColor(self.colors.GetColor3d('LightSteelBlue'))
         self.probeActor.GetProperty().SetSpecular(0.3)
         self.probeActor.GetProperty().SetSpecularPower(60.0)
-        self.probeActor.SetPosition(0,0,0)
+        self.probeActor.SetPosition(self.points[2][0],self.points[2][1],self.points[2][2])
 
         # self.SetProbePosition(90,90,90)
         self.SetProbeVisibility(True)
 
+        
+        self.p2 = vtk.vtkSphereSource()
+        self.p2.SetRadius(5.0)
+        self.p2Mapper = vtk.vtkPolyDataMapper()
+        self.p2Mapper.SetInputConnection(self.p2.GetOutputPort())
+        self.p2Actor = vtk.vtkActor()
+        self.p2Actor.SetMapper(self.p2Mapper)
+        self.p2Actor.GetProperty().SetColor(self.colors.GetColor3d("red"))
+        self.p2Actor.SetPosition(self.points[2][0],self.points[2][1],self.points[2][2])
+        
+        self.p3 = vtk.vtkSphereSource()
+        self.p3.SetRadius(5.0)
+        self.p3Mapper = vtk.vtkPolyDataMapper()
+        self.p3Mapper.SetInputConnection(self.p3.GetOutputPort())
+        self.p3Actor = vtk.vtkActor()
+        self.p3Actor.SetMapper(self.p3Mapper)
+        self.p3Actor.GetProperty().SetColor(self.colors.GetColor3d("red"))
+        self.p3Actor.SetPosition(self.points[3][0],self.points[3][1],self.points[3][2])
+
+        self.p4 = vtk.vtkSphereSource()
+        self.p4.SetRadius(5.0)
+        self.p4Mapper = vtk.vtkPolyDataMapper()
+        self.p4Mapper.SetInputConnection(self.p4.GetOutputPort())
+        self.p4Actor = vtk.vtkActor()
+        self.p4Actor.SetMapper(self.p4Mapper)
+        self.p4Actor.GetProperty().SetColor(self.colors.GetColor3d("red"))
+        self.p4Actor.SetPosition(self.points[4][0],self.points[4][1],self.points[4][2])
+
+        self.p5Actor = vtk.vtkActor()
+        self.p5Actor.SetMapper(self.p4Mapper)
+        self.p5Actor.GetProperty().SetColor(self.colors.GetColor3d("green"))
+        self.p5Actor.SetPosition(self.points[5][0],self.points[5][1],self.points[5][2])
+
+        self.p6Actor = vtk.vtkActor()
+        self.p6Actor.SetMapper(self.p4Mapper)
+        self.p6Actor.GetProperty().SetColor(self.colors.GetColor3d("green"))
+        self.p6Actor.SetPosition(self.points[6][0],self.points[6][1],self.points[6][2])
+
+        # calling here function for testing
+        self.HighlightPhantomPoint(2,"green")
+        # self.RemoveHighlight(20)
+        # self.RemoveAllHighlights()
+
         self.ren.AddActor(self.targetSphereActor)
+        # self.ren.AddActor(self.p2Actor)
+        self.ren.AddActor(self.p3Actor)
+        self.ren.AddActor(self.p4Actor)
+        self.ren.AddActor(self.p5Actor)
+        self.ren.AddActor(self.p6Actor)
         self.ren.AddActor(self.probeActor)
         self.ren.AddActor(self.phantom)
 
