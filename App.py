@@ -29,7 +29,7 @@ from vtkmodules.vtkRenderingCore import (
 def main():
     colors = vtkNamedColors()
 
-    filename = "holecube.stl"
+    filename = "AccuracyTestingJigMainBody.stl"
 
     reader = vtkSTLReader()
     reader.SetFileName(filename)
